@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>signup</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		var name = getCookie('name');
+		if(name != ""){
+			if(getCookie('isadmin')) window.location = "admin-managelabs.html";
+        	else window.location = "user-managelabs.html";
+		}	
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+				</div>
+			</div>
+		</header>
+		<section  class="mt20 fwidth">
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4">
+					<div class="doc-con bcw">
+						<h1 class="cr">Sign Up</h1>
+						<p class="small bold ftxt mt10">
+							Already Registered?
+							<a href="login.html"> Log In</a>
+						</p>
+					</div>
+					<div class="doc-con bcw">
+						<form class="form-horizontal">
+							<label>FirstName:</label>
+							<input type="text"  name="firstname" id="firstname" >
+
+							<label>LastName:</label>
+							<input type="text" class="mhb" name="lastname" id="lastname">
+
+							<label>Role:</label>
+							<select class="mhb" name="role" id="role">
+								<option ></option>
+								<option value="faculty">faculty</option>
+								<option  value="user">student</option>
+							</select>
+							<label>Email:</label>
+							<input type="email" class="mhb" name="email" id="email">
+
+							<label>Password:</label>
+							<input type="password" class="mhb" name="password" id="password">
+
+							<label>ReEnter:</label>
+							<input type="password" class="mdb" name="passcheck" id="passcheck">
+
+							<button type="button" class="btn btn-danger btn-block mb bold fs16" id="signup">Sign Up</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+$(document).ready(function(){
+	$(document).keypress(function(event){
+
+	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == '13'){
+	        $('#signup').click();   
+	    }
+
+	}); 
+	$("#signup").click(function(){
+		var firstname = $("#firstname").val();
+		var lastname = $("#lastname").val();
+		var email = $("#email").val();
+		var password = $("#password").val();
+		var passcheck = $("#passcheck").val();
+		var role = $('#role').val();
+		var flag = false;
+		if (!firstname || !lastname || !email || !password || !passcheck || !role){
+			if (!firstname)notify('error','FirstName is empty');
+			if (!lastname)notify('error','LastName is empty');
+			if (!email)notify('error','Email is empty');
+			if (!password)notify('error','Password is empty');
+			if (!passcheck)notify('error','ReEnter is empty');
+			if (!role)notify('error','role is empty');
+		}
+		else{
+			if (password != passcheck)notify('error','Password miss match');
+			else{
+				$.post("authentication.php",{ action: "emailCheck", email: email}, 
+				function(data,status){
+	        		if (data == 0){
+	        			notify('error', 'Email already exist');
+	        		} else{
+                                        console.log(email);
+	        			$.post("authentication.php",{ action: "addUser", umail: email, firstname: firstname, lastname:lastname, password:password, role:role}, function (data) {
+	        				window.location = "login.html";
+	        			});
+	        		}
+	    		});
+			}
+		}
+	});
+});
+</script>
+</body>
+</html>
+

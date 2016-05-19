@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Manage User</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		checkCookie();
+		if(getCookie('isadmin')=="0")goUser();
+		if(getCookie('isadmin')=="2")goFaculty();
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+					<div class="dropdown col-md-1 mt20 pull-right">
+						<h4 class="dropdown-toggle user-name" id="menu1" data-toggle="dropdown">
+						</h4>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+							<li role="presentation" id="logout"><a role="menuitem" tabindex="-1">Logout</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="row">
+			<ul>
+				<li><a  href="admin-addusers.html?page=1">Add Users</a></li>
+				<li class="act"><a href="admin-manageusers.html?page=1">Manage Users</a></li>
+			</ul>
+		</nav>
+		<section class="row con-sec">
+			<div class="col-md-8 col-md-offset-2 mt40">
+				<div class="head-well bcly">
+					<h2>Manage User</h2>
+				</div>
+				<div class="table-responsive mt20">
+					<table class="table table-striped table-bordered table-hover table-condensed">
+						<thead>
+							<tr>
+								<th></th>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Email</th>
+								<th>Role</th>
+								<th>Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+				  	</table>
+				</div>
+				<div class="col-md-4 text-center col-md-offset-4"> 
+					<button class="btn btn-danger btn-lg obtn mt30" id="deleteapproved">Delete</button> 
+				</div>
+				<div class="col-md-12 tcenter m0 p0">
+					<ul class="pagination">
+					<ul>
+				</div>
+			</div>
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+$(document).ready(function() {
+	$("#logout").click(function(){
+		deleteCookie();
+	});
+	$('.user-name').html(getCookie('name')+'<span class="caret"></span>');
+	function load () {
+		var page = window.location.href;page = page.split('?')[1].split('=')[1];
+		$("tbody").empty();
+		$.post("admin.php",{ action: "loadapprovedusers", page:page}, 
+		function(data,status){
+			if (data == 0){
+				notify('error', 'No Approved Users');
+			} else {
+				console.log(data);
+				$("tbody").empty();$(".pagination").empty();
+				$("tbody").append(data.split('|')[0]);
+				$(".pagination").append(data.split('|')[1]);
+			}
+		});
+	}
+	load();
+	$("#deleteapproved").click(function(){
+		var deletelist = String($(".active").map(function() {
+            return this.id;
+        }).get());
+        console.log(deletelist);
+        $.post("admin.php",{ action: "deleteapproved", deletelist: deletelist},function(data,status){
+			if (data == 0){
+				notify('error', 'Error Deleting Approved User');
+			} else {
+				load();
+				notify('success', 'User Deleted Successfully');
+			}
+		});
+	});
+});
+</script>
+</body>
+</html>
+

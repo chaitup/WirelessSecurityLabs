@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>User Profile</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		checkCookie();
+		if(getCookie('isadmin')=="0")goUser();
+		if(getCookie('isadmin')=="1")goAdmin();
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+					<div class="dropdown col-md-1 mt20 pull-right">
+						<h4 class="dropdown-toggle user-name" id="menu1" data-toggle="dropdown">
+						</h4>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+							<li role="presentation" id="logout"><a role="menuitem" tabindex="-1">Logout</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="row">
+			<ul>
+				<li><a href="faculty-managematerials.html?page=1">Labs</a></li>
+				<li><a href="faculty-addmaterial.html">Add Lab</a></li>
+				<li><a href="faculty-labscores.html?page=1">Lab Scores</a></li>
+				<li><a href="faculty-request.html?page=1">Request</a></li>
+				<li  class="act"><a href="faculty-profile.html">Profile</a></li>
+			</ul>
+		</nav>
+		<section class="row con-sec">
+			<div class="col-md-8 col-md-offset-2 mt40">
+				<div class="head-well bcly">
+					<h2>Profile Edit</h2>
+				</div>
+				<div class="table-responsive mt20">
+					<form class="form-horizontal" style="text-align:left;">
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label tleft" for="firstname">FirstName</label>
+							<div class="col-md-8">
+								<input class="form-control" type="text" id="firstname" placeholder="Firstname"  name="firstname">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label tleft" for="lastname">LastName</label>
+							<div class="col-md-8">
+								<input class="form-control" type="text" id="lastname" placeholder="LastName"  name="lastname">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label tleft" for="email">Email</label>
+							<div class="col-md-8 pull-left">
+								<input class="form-control" type="email" id="email" placeholder="Email"  disabled name="email">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label tleft" for="password">Password</label>
+							<div class="col-md-8 pull-left">
+								<input class="form-control" type="password" id="password" placeholder="Password"  name="password">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label tleft" for="reenter">ReEnter</label>
+							<div class="col-md-8">
+								<input class="form-control" type="password" id="reenter" placeholder="ReEnter" name="reenter">
+							</div>
+						</div>
+					</form>
+					<div class="col-md-4 text-center col-md-offset-4"> 
+						<button class="btn btn-danger btn-lg obtn mt20" id="proedit">Edit</button> 
+					</div>
+				</div>
+				
+			</div>
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+$(document).ready(function() {
+	$("#logout").click(function(){
+		deleteCookie();
+	});
+	$('.user-name').html(getCookie('name')+'<span class="caret"></span>');
+	$.post("users.php",{ action: "userdetail", us_id :getCookie('user_id')}, 
+	function(data,status){
+		var d = JSON.parse(data)[0];
+		$("#email").val(d.email);
+		$("#firstname").val(d.firstname);
+		$("#lastname").val(d.lastname);
+	});
+	$("#proedit").click(function(){
+		var firstname = $("#firstname").val();
+		var lastname = $("#lastname").val();
+		var password = $("#password").val();
+		var reenter = $("#reenter").val();
+		function editprofile () {
+			$.post("users.php",{ action:"proedit", us_id:getCookie('user_id'), firstname: firstname, lastname: lastname, password:password},function(data,status){	
+	                          notify("success", "Profile edited successfully");
+			})
+		}
+		
+		if(password){
+			if(!reenter) notify("error", "ReEnter should not be Empty");
+			if(password != reenter) notify("error", "Password miss match")
+			else editprofile();
+		} else editprofile();
+
+	});
+	
+
+});
+</script>
+</body>
+</html>
+
+	

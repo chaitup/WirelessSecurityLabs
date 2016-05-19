@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Add Lab</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/jquery.filer.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		checkCookie();
+		if(getCookie('isadmin')=="2")goFaculty();
+		if(getCookie('isadmin')=="1")goAdmin();
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.filer.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+					<div class="dropdown col-md-1 mt20 pull-right">
+						<h4 class="dropdown-toggle user-name" id="menu1" data-toggle="dropdown">
+						</h4>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+							<li role="presentation" id="logout"><a role="menuitem" tabindex="-1" >Logout</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="row">
+			<ul>
+				<li><a href="user-managematerials.html?page=1">Labs</a></li>
+				<li><a href="user-faqlist.html?page=1">Support</a></li>
+				<li><a href="user-labscores.html?page=1">Lab Scores</a></li>
+				<li><a href="user-profile.html">Profile</a></li>
+			</ul>
+		</nav>
+		<section class="row con-sec">
+			<div class="col-md-8 col-md-offset-2 mt40">
+				<div class="head-well bcly">
+					<h2>Add Lab</h2>
+				</div>
+				<div class="table-responsive mt20">
+					<form class="form-horizontal"  enctype="multipart/form-data">
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="labname">Lab Name</label>
+							<div class="col-md-8">
+							  <input class="form-control" type="text" id="labname" placeholder="Lab Name" name="labname">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="filename">File Name</label>
+							<div class="col-md-8 ">
+							  <input class="form-control" type="text" id="filename" placeholder="File Name" name="filename">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="labfile">Lab File</label>
+							<div class="col-md-4 ">	
+								<a id="labfile"><button type="button" class="form-control  btn btn-primary"  value="download">Download</button></a>
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label " for="lastdate">Last Date</label>
+							<div class="col-md-8">
+							  <input class="form-control" type="text" placeholder="Last Submission Date" name="lastdate" id="lastdate">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="labfiles">File Upload</label>
+							<div class="col-md-8" style="overflow:hidden;">
+								<input class="form-control" type="file" id="labfiles" placeholder="File Upload" multiple="multiple" name="files[]">
+							</div>
+					  	</div>
+						<div class="col-md-4 text-center col-md-offset-4"> 
+							<button class="btn btn-primary btn-lg obtn mt20" id="addlab">Submit</button> 
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs 2016
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+
+$(document).ready(function() {
+	$("#logout").click(function(){
+		deleteCookie ();
+	});
+	$('.user-name').html(getCookie('name')+'<span class="caret"></span>');
+	$('#labfiles').filer({addMore: true,showThumbs:true,
+		uploadFile: {
+	        url: "./upload.php",
+	        data: null,
+	        type: 'POST',
+	        enctype: 'multipart/form-data',
+	        beforeSend: function(){},
+	        success: function(data, el){
+	            var parent = el.find(".jFiler-jProgressBar").parent();
+	            el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+	                $("<div class=\"jFiler-item-others text-success\"><i class=\"icon-jfi-check-circle\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");    
+	            });
+	        },
+	        error: function(el){
+	            var parent = el.find(".jFiler-jProgressBar").parent();
+	            el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+	                $("<div class=\"jFiler-item-others text-error\"><i class=\"icon-jfi-minus-circle\"></i> Error</div>").hide().appendTo(parent).fadeIn("slow");    
+	            });
+	        },
+	        statusCode: null,
+	        onProgress: null,
+	        onComplete: null
+	    }
+	}); 
+	var getUrlParameter = function getUrlParameter(sParam) {
+	    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
+
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
+
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : sParameterName[1];
+	        }
+	    }
+	};
+	var lab_id = getUrlParameter('lab_id');
+	console.log(lab_id);
+	$.post("users.php",{ action: "getLabDetails", lab_id: lab_id}, 
+	function(data,status){
+		if (data == 0){
+			notify('error', 'No Labs Created');
+		} else {
+			data = data.split(";");
+			$("#labname").val(data[0]).attr('disabled', 'disabled');
+			$("#lastdate").val(data[2]).attr('disabled', 'disabled');
+			$("#filename").val(data[3]).attr('disabled', 'disabled');
+			$("#labfile").attr('href', data[1]);
+		}
+	});
+	$("#addlab").click(function() {
+		$("form").submit(function(e){
+		    e.preventDefault();
+		});
+		var files = $("#labfiles").val();
+		var lab_name = $("#labname").val();
+		var submittedby = getCookie('user_id');
+		var midname = $("#filename").val();
+		var destname = "./upload/"+midname+"/"+getCookie('name');
+		var filename = getCookie('name');
+		var d = new Date();
+		d = (d.getMonth()+1)+'-'+d.getDate()+'-'+d.getFullYear();
+		console.log(d);
+		if (!files){
+			notify('error','Files not uploaded');
+		}
+		else{
+			$.post("users.php",{ action: "addlab", lab_name:lab_name, submittedby: submittedby, destname: destname, filename: filename, lab_id: lab_id, subdate:d, finame:getCookie('name')}, 
+			function(data,status){
+				console.log(data);
+	    		if (data == 1){
+	    			window.location.href = "user-managematerials.html?page=1"
+	    			notify('success', 'Lab File Submitted Successfully');
+	    		} else {
+	    			console.log(data);
+	    			notify('error', data);
+	    		}
+			});
+		}
+	});
+});
+</script>
+</body>
+</html>
+

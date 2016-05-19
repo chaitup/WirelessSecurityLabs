@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Add Lab</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/jquery.filer.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		checkCookie();
+		if(getCookie('isadmin')=="0")goUser();
+		if(getCookie('isadmin')=="1")goAdmin();
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.filer.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+					<div class="dropdown col-md-1 mt20 pull-right">
+						<h4 class="dropdown-toggle user-name" id="menu1" data-toggle="dropdown">
+						</h4>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+							<li role="presentation" id="logout"><a role="menuitem" tabindex="-1" >Logout</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="row">
+			<ul>
+				<li><a href="faculty-managematerials.html?page=1">Labs</a></li>
+				<li class="act"><a href="faculty-addmaterial.html">Add Lab</a></li>
+				<li><a href="faculty-labscores.html?page=1">Lab Scores</a></li>
+				<li><a href="faculty-request.html?page=1">Request</a></li>
+				<li><a href="faculty-profile.html">Profile</a></li>
+			</ul>
+		</nav>
+		<section class="row con-sec">
+			<div class="col-md-8 col-md-offset-2 mt40">
+				<div class="head-well bcly">
+					<h2>Add Lab</h2>
+				</div>
+				<div class="table-responsive mt20">
+					<form class="form-horizontal"  enctype="multipart/form-data">
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="labname">Subject Name</label>
+							<div class="col-md-8">
+							  <input class="form-control" type="text" id="labname" placeholder="Subject Name" name="labname">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="filename">File Name</label>
+							<div class="col-md-8">
+							  <input class="form-control" type="text" id="filename" placeholder="File Name" name="filename">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label " for="lastdate">Last Sub Date</label>
+							<div class="col-md-8">
+							  <input class="form-control" type="date" placeholder="Last Submission Date" name="lastdate" id="lastdate">
+							</div>
+						</div>
+						<div class="form-group form-group-lg">
+							<label class="col-md-2 col-md-offset-1 control-label" for="labfiles">File Upload</label>
+							<div class="col-md-8" style="overflow:hidden;">
+								<input class="form-control" type="file" id="labfiles" placeholder="File Upload" multiple="multiple" name="files[]">
+							</div>
+					  	</div>
+						<div class="col-md-4 text-center col-md-offset-4"> 
+							<button class="btn btn-primary btn-lg obtn" id="addlab">Submit</button> 
+						</div>
+					</form>
+					
+				</div>
+				
+			</div>
+
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+
+$(document).ready(function() {
+	$("#logout").click(function(){
+		deleteCookie ();
+	});
+	$('.user-name').html(getCookie('name')+'<span class="caret"></span>');
+
+	$('#labfiles').filer({addMore: true,showThumbs:true,
+		uploadFile: {
+	        url: "./upload.php",
+	        data: null,
+	        type: 'POST',
+	        enctype: 'multipart/form-data',
+	        beforeSend: function(){},
+	        success: function(data, el){
+	            var parent = el.find(".jFiler-jProgressBar").parent();
+	            el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+	                $("<div class=\"jFiler-item-others text-success\"><i class=\"icon-jfi-check-circle\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");    
+	            });
+	        },
+	        error: function(el){
+	            var parent = el.find(".jFiler-jProgressBar").parent();
+	            el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+	                $("<div class=\"jFiler-item-others text-error\"><i class=\"icon-jfi-minus-circle\"></i> Error</div>").hide().appendTo(parent).fadeIn("slow");    
+	            });
+	        },
+	        statusCode: null,
+	        onProgress: null,
+	        onComplete: null
+	    }
+	}); 
+	$("#addlab").click(function() {
+		$("form").submit(function(e){
+		    e.preventDefault();
+		});
+		var subject = $("#labname").val();
+		var filename = $("#filename").val();
+		var labfiles = $("#labfiles").val();
+		var lastdate = $("#lastdate").val();
+		lastdate = lastdate.split('-');
+		lastdate = lastdate[1]+"-"+lastdate[2]+"-"+lastdate[0];
+
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth()+1; //January is 0!
+		var yyyy = today.getFullYear();
+
+		if(dd<10) {
+			dd='0'+dd
+		}
+
+		if(mm<10) {
+			mm='0'+mm
+		}
+
+		today = mm+'/'+dd+'/'+yyyy;
+		if (!labname || !filename  || !labfiles || !lastdate){
+			if (!labname)notify('error','labname should not empty');
+			if (!filename)notify('error','filename should not be empty');
+			if (!labfiles)notify('error','labfiles should not be empty');
+			if (!lastdate)notify('error','lastdate should not be empty');
+		}
+		else if (lastdate == 'undefined-undefined-'){
+			notify('error','lastdate should not be empty');
+		}
+		else if (new Date(lastdate) < new Date(today)) {
+			notify('error','lastdate cannot be less than todays date');
+		}
+		else {
+			$.post("admin.php",{ action: "checkLabname", filename: filename}, 
+			function(data,status){
+				if (data == 1){
+					notify('error', 'File Name Already Exist');
+				} else {
+                                       
+					$.post("admin.php",{action: "addmaterial", subject: subject, filename: filename, sub_date:lastdate, submittedby:getCookie('email').replace('%40', '@') }, 
+					function(data,status){
+						console.log(data);
+						notify('success', 'Lab Created successfully');
+						window.location.href = "faculty-managematerials.html?page=1"
+					});
+				}
+			});
+	    		
+		}
+	});
+});
+</script>
+</body>
+</html>
+

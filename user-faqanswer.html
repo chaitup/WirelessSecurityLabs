@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>FAQ Answer</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/cookies.js"></script>
+	<script>
+		checkCookie();
+		if(getCookie('isadmin')=="2")goFaculty();
+		if(getCookie('isadmin')=="1")goAdmin();
+	</script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="base.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.noty.packaged.min.js"></script>
+</head>
+<body>
+	<div class="wrapper container-fluid">
+		<header class="header">
+			<div class="row">
+				<div class"col-md-12">
+					<h2 class="col-md-4 navbar-brand"><span class='doc'>Wireless</span> Security Labs</h2>
+					<div class="dropdown col-md-1 mt20 pull-right">
+						<h4 class="dropdown-toggle user-name" id="menu1" data-toggle="dropdown">
+						</h4>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+							<li role="presentation" id="logout"><a role="menuitem" tabindex="-1">Logout</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="row">
+			<ul>
+				<li><a href="user-managematerials.html?page=1">Labs</a></li>
+				<li  class="act"><a href="user-faqlist.html?page=1">Support</a></li>
+				<li><a href="user-labscores.html?page=1">Lab Scores</a></li>
+				<li><a href="user-profile.html">Profile</a></li>
+			</ul>
+		</nav>
+		<section class="row con-sec">
+			<div class="col-md-8 col-md-offset-2 mt40">
+				<div class="head-well bcly">
+					<h2>FAQ Answer Form</h2>
+				</div>
+				<div class="table-responsive mt20">
+					<h3 style="display:inline">Question: </h3>
+					<h4 style="display:inline" id="question"></h4><br><br>
+					<ul>
+						<li>Posted By: <span id="postedby"></span></li>
+						<li>Posted Date:<span id="postdate"></span></li>
+					</ul>
+					<div class="form-group">
+						<label for="answer">Answer:</label>
+						<textarea class="answer" rows="5" id="faqans" style="resize:vertical"></textarea>
+					</div>
+				</div>
+			</div>
+		</section>
+		<footer class="text-center">
+			<div class="footer-below">
+				<div class="col-md-12"> 
+					Copyright © Wireless Security Labs
+				</div>
+			</div>
+		</footer>
+	</div>
+<script>
+$(document).ready(function() {
+	$('.user-name').html(getCookie('name')+'<span class="caret"></span>');
+	var url = window.location.href ;
+	var faq_id = url.split("?")[1].split("=")[1];
+	console.log(faq_id);
+	$.post("users.php",{ action: "faqdetail", faq_id: faq_id}, 
+	function(data,status){
+		if (data == 0){
+			notify('error', 'No faqs');
+		} else {
+			var d = JSON.parse(data);
+			$("#question").text(d.question);
+			$("#postedby").text(" "+d.askedby);
+			$("#postdate").text(" "+d.asked_date);
+			$("#faqans").text(" "+d.answer).attr('disabled', 'disabled');
+			console.log(d);
+		}
+	});
+	
+
+});
+</script>
+</body>
+</html>
+
